@@ -1,0 +1,2 @@
+class PrerequisiteModuleException(Exception):
+    pass

@@ -1,0 +1,36 @@
+import lit.formats
+
+# The name of the test suite, for use in reports and diagnostics.
+config.name = 'CallTargetsPinTool'
+
+# The test format object which will be used to discover and run tests in the test suite.
+config.test_format = lit.formats.ShTest()
+
+# The filesystem path to the test suite root. This is the directory that will be scanned for tests.
+config.test_source_root = '@CMAKE_SOURCE_DIR@/test/'
+
+# The path to the test suite root inside the object directory. This is where tests will be run and temporary output files placed.
+config.test_exec_root = '@CMAKE_BINARY_DIR@/test/'
+
+# Suffixes used to identify test files.
+config.suffixes = ['.c', '.cpp', '.sh']
+
+# Substitutions to perform.
+if '@Pin_TARGET_ARCH@'.upper() == 'X86':
+    config.substitutions.append((' %sde ', ' @SDE_ROOT_DIR@/sde '))
+    config.substitutions.append((' %toolarg ', ' -t32 %tool -t64 %tool '))
+    config.substitutions.append(('nullapp', '@SDE_ROOT_DIR@/ia32/nullapp'))
+else:
+    config.substitutions.append((' %sde ', ' @SDE_ROOT_DIR@/sde64 '))
+    config.substitutions.append((' %toolarg ', ' -t64 %tool '))
+    config.substitutions.append(('nullapp', '@SDE_ROOT_DIR@/intel64/nullapp'))
+
+config.substitutions.append((' %tool ', ' @CMAKE_BINARY_DIR@/libCallTargets.so '))
+config.substitutions.append((' FileCheck ', ' @FILECHECK@ -dump-input-filter=all -vv -color '))
+config.substitutions.append((' gcc ', ' gcc @TEST_COMPILER_ARGS@ '))
+config.substitutions.append((' g\+\+ ', ' g++ @TEST_COMPILER_ARGS@ '))
+config.substitutions.append((' pretty-print-csvs.py ', ' @CMAKE_SOURCE_DIR@/util/pretty-print-csvs.py '))
+config.substitutions.append((' patch-debug-info.py ', ' @CMAKE_SOURCE_DIR@/../../container/patch-debug-info.py '))
+
+# A set of features that can be used in XFAIL, REQUIRES, and UNSUPPORTED directives.
+config.available_features = ['@Pin_TARGET_ARCH@']

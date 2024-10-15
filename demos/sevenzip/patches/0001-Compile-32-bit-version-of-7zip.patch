@@ -1,0 +1,25 @@
+From 1981866c8729912d3c1f019da0e3c906d78bbf2d Mon Sep 17 00:00:00 2001
+From: Thomas Faingnaert <thomas.faingnaert@ugent.be>
+Date: Tue, 18 May 2021 17:11:02 +0200
+Subject: [PATCH 1/2] Compile 32-bit version of 7zip
+
+---
+ makefile.linux_amd64 | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/makefile.linux_amd64 b/makefile.linux_amd64
+index 898d9df..4aaad84 100644
+--- a/makefile.linux_amd64
++++ b/makefile.linux_amd64
+@@ -2,7 +2,7 @@
+ OPTFLAGS=-O -s
+ 
+ # use "-m32" to have a 32bits executable
+-ALLFLAGS=-m64 ${OPTFLAGS} -pipe \
++ALLFLAGS=-m32 ${OPTFLAGS} -pipe \
+     	-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE \
+ 	-DNDEBUG -D_REENTRANT -DENV_UNIX \
+ 	-D_7ZIP_LARGE_PAGES \
+-- 
+2.25.1
+

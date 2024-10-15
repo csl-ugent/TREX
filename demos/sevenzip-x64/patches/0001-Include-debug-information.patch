@@ -1,0 +1,23 @@
+From fece3222fc7f29427bbdad489f5493fc182f72e8 Mon Sep 17 00:00:00 2001
+From: Thomas Faingnaert <thomas.faingnaert@ugent.be>
+Date: Tue, 18 May 2021 17:19:59 +0200
+Subject: [PATCH] Include debug information
+
+---
+ makefile.linux_amd64 | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/makefile.linux_amd64 b/makefile.linux_amd64
+index 898d9df..44915a7 100644
+--- a/makefile.linux_amd64
++++ b/makefile.linux_amd64
+@@ -1,5 +1,5 @@
+ 
+-OPTFLAGS=-O -s
++OPTFLAGS=-O -g
+ 
+ # use "-m32" to have a 32bits executable
+ ALLFLAGS=-m64 ${OPTFLAGS} -pipe \
+-- 
+2.25.1
+

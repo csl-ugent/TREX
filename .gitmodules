@@ -1,0 +1,6 @@
+[submodule "detector"]
+	path = modules/mba_detector/detector
+	url = https://github.ugent.be/SysLab/mamba.git
+[submodule "demos/supertux/supertux"]
+	path = demos/supertux/supertux
+	url = https://github.com/SuperTux/supertux

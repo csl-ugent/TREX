@@ -1,0 +1,12 @@
+**/__pycache__
+**/*.pyc
+/workspaces/*
+/data/*
+/import/*
+/old
+/venv
+/bin
+/lib
+/share
+/pyvenv.cfg
+**/.ipynb_checkpoints/

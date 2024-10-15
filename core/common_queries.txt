@@ -1,0 +1,117 @@
+MATCH (a:Caballero)-[r*1..6]-(n)
+FOREACH (rel in r | DELETE rel)
+DELETE n
+
+MATCH (:Disassembly {module: 'IDADism'})-[:DEFINES_BLOCK]->(b:BasicBlock)
+WHERE EXISTS ( (b)-[:HAS_INSTRUCTION]->(:Instruction)<-[:ANNOTATES]-()<-[*0..2]-(:Grapp) )
+AND   EXISTS ( (b)<-[:ANNOTATES]-()<-[]-(:Caballero) )
+RETURN b
+
+MATCH (id:Disassembly {module: 'IDADism'}), (gd:Disassembly {module: 'Grapp'}) WITH id, gd
+MATCH (id)-[:DEFINES_BLOCK]->(ib:BasicBlock)
+WHERE NOT EXISTS ((:BasicBlock {start_address: ib.start_address})<-[:DEFINES_BLOCK]-(gd))
+RETURN ib.start_address
+
+EXPLAIN
+UNWIND [{id: 36403, address: 1154433}, {id: 36407, address: 41200}] AS row
+MATCH (src_block:BasicBlock { id: row.id}), (dest_block:BasicBlock)-[:HAS_INSTRUCTION]->(i:Instruction {address: row.address})
+CREATE (src_block)-[:HAS_CF_EDGE]->(dest_block)
+
+MATCH (s:BasicBlock)<-[:RECORDED_BLOCK]-(:Caballero)
+OPTIONAL MATCH (t:BasicBlock)<-[:DEFINES_BLOCK]-(:Disassembly)
+WHERE s.start_address = t.start_address
+RETURN s, t
+
+MATCH (cA:Caballero), (dA:Disassembly) WITH cA, dA LIMIT 1
+MATCH (s:BasicBlock)<-[:RECORDED_BLOCK]-(cA) WITH dA, s
+MATCH (t:BasicBlock)<-[:DEFINES_BLOCK]-(dA)
+WHERE (s.start_address < t.end_address) AND (s.end_address > t.start_address)
+RETURN s, COLLECT(t)
+
+MATCH (cA:Caballero), (dA:Disassembly) WITH cA, dA LIMIT 1
+MATCH (s)<-[:RECORDED_BLOCK]-(cA) WITH dA, s
+MATCH (t)<-[:DEFINES_BLOCK]-(dA)
+WHERE (s.start_address < t.end_address) AND (s.end_address > t.start_address)
+RETURN s, COLLECT(t)
+
+MATCH (s:BasicBlock)<-[:RECORDED_BLOCK]-(:Caballero)
+OPTIONAL MATCH (t:BasicBlock)<-[:DEFINES_BLOCK]-(:Disassembly)
+WHERE (s.start_address >= t.start_address AND s.start_address < t.end_address)
+OR (s.end_address > t.start_address AND s.end_address <= t.end_address)
+OR (s.start_address > t.start_address AND s.end_address >= t.end_address)
+RETURN s, COLLECT(t)
+
+MATCH (s:BasicBlock)<-[:RECORDED_BLOCK]-(:Caballero)
+OPTIONAL MATCH (t:BasicBlock)<-[:DEFINES_BLOCK]-(:Disassembly)
+WHERE (s.start_address >= t.start_address AND s.start_address < t.end_address)
+OR (s.end_address > t.start_address AND s.end_address <= t.end_address)
+OR (s.start_address > t.start_address AND s.end_address >= t.end_address)
+WITH s, t
+MATCH (si:Instruction)<-[:HAS_INSTRUCTION]-(s)
+MATCH (ti:Instruction {address: si.address})<-[:HAS_INSTRUCTION]-(t)
+WHERE si.assembly = ti.assembly
+RETURN count(s), count(t)
+
+MATCH p = (s:BasicBlock)<-[:RECORDED_BLOCK]-(:Caballero)
+OPTIONAL MATCH (t:BasicBlock)<-[:DEFINES_BLOCK]-(:Disassembly)
+WHERE (s.start_address >= t.start_address AND s.start_address < t.end_address)
+OR (s.end_address > t.start_address AND s.end_address <= t.end_address)
+OR (s.start_address > t.start_address AND s.end_address >= t.end_address)
+UNWIND nodesp
+MATCH (si:Instruction)<-[:HAS_INSTRUCTION]-(s)
+MATCH (ti:Instruction {address: si.address})<-[:HAS_INSTRUCTION]-(t)
+WHERE si.assembly = ti.assembly
+RETURN count(s), count(t)
+
+
+    ttttttttttt
+sssssssssssssssssssssssss
+    
+    ttttttttttt
+         ssssssssssssss
+    
+    ttttttttttt
+ssssssss
+    
+    ttttttttttt
+        ssss
+    
+(s.start_address >= t.start_address AND s.start_address < t.end_address)
+OR (s.end_address > t.start_address AND s.end_address <= t.end_address)
+OR (s.start_address > t.start_address AND s.end_address >= t.end_address)
+
+(s.start_address < t.end_address)
+AND
+(s.end_address > t.start_address)
+
+(cache[s.start_address] < cache[t.end_address]
+    OR cache[s.end_address] <= cache[t.end_address]
+    OR cache[s.end_addres] >= cache[t.end_address])
+AND
+(cache[s.start_address] < cache[t.end_address]
+    OR cache[s.end_address] <= cache[t.end_address]
+    OR cache[s.start_address] > cache[t.start_address])
+AND
+(cache[s.start_address] < cache[t.end_address]
+    OR cache[s.end_address] > cache[t.start_address]
+    OR cache[s.end_addres] >= cache[t.end_address])
+AND
+(cache[s.start_address] < cache[t.end_address]
+    OR cache[s.end_address] > cache[t.start_address]
+    OR cache[s.start_address] > cache[t.start_address])
+AND
+(cache[s.start_address] >= cache[t.start_address]
+    OR cache[s.end_address] <= cache[t.end_address]
+    OR cache[s.start_address] > cache[t.start_address])
+AND
+(cache[s.start_address] >= cache[t.start_address]
+    OR cache[s.end_address] > cache[t.start_address]
+    OR cache[s.start_address] > cache[t.start_address])
+AND
+(cache[s.start_address] >= cache[t.start_address]
+    OR cache[s.end_address] <= cache[t.end_address]
+    OR cache[s.end_addres] >= cache[t.end_address])
+AND
+(cache[s.start_address] >= cache[t.start_address]
+    OR cache[s.end_address] > cache[t.start_address]
+    OR cache[s.end_addres] >= cache[t.end_address])

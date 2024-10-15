@@ -1,0 +1,144 @@
+From 99ba24c40fb828a5c5d7d90d7f97505b0f5ec25a Mon Sep 17 00:00:00 2001
+From: Thomas Faingnaert <thomas.faingnaert@hotmail.com>
+Date: Tue, 26 Jan 2021 17:37:31 +0100
+Subject: [PATCH 2/2] Annotate encryption routines
+
+Find routines using:
+
+grep -nr 'encrypt'
+---
+ crypto/MATE_FRAMEWORK.c  |  2 +-
+ crypto/evp/e_aes.c       | 10 ++++++++--
+ crypto/evp/evp_enc.c     |  1 +
+ crypto/modes/ctr128.c    |  6 ++++++
+ crypto/modes/gcm128.c    |  6 ++++++
+ include/MATE_FRAMEWORK.h |  2 +-
+ 6 files changed, 23 insertions(+), 4 deletions(-)
+
+diff --git a/crypto/MATE_FRAMEWORK.c b/crypto/MATE_FRAMEWORK.c
+index d105adad0a..afbeeb2513 100644
+--- a/crypto/MATE_FRAMEWORK.c
++++ b/crypto/MATE_FRAMEWORK.c
+@@ -1,3 +1,3 @@
+ #include "MATE_FRAMEWORK.h"
+ 
+-void MATE_FRAMEWORK_DEBUG_ANNOTATE_MEMORY(const char *address, const char *annotation) {}
++void MATE_FRAMEWORK_DEBUG_ANNOTATE_MEMORY(const char *address, unsigned int size, const char *annotation, const char* filename, unsigned int line) {}
+diff --git a/crypto/evp/e_aes.c b/crypto/evp/e_aes.c
+index 11a40acae3..a0818261bb 100644
+--- a/crypto/evp/e_aes.c
++++ b/crypto/evp/e_aes.c
+@@ -303,6 +303,9 @@ static int aesni_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
+ static int aesni_cbc_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
+                             const unsigned char *in, size_t len)
+ {
++    MATE_FRAMEWORK_DEBUG_ANNOTATE_MEMORY(in, len, "crypto:false", __FILE__, __LINE__); // input for encryption is not crypto
++    MATE_FRAMEWORK_DEBUG_ANNOTATE_MEMORY(out, len, "crypto:true", __FILE__, __LINE__); // output for encryption is crypto
++
+     aesni_cbc_encrypt(in, out, len, &EVP_C_DATA(EVP_AES_KEY,ctx)->ks.ks,
+                       EVP_CIPHER_CTX_iv_noconst(ctx),
+                       EVP_CIPHER_CTX_encrypting(ctx));
+@@ -313,6 +316,9 @@ static int aesni_cbc_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
+ static int aesni_ecb_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
+                             const unsigned char *in, size_t len)
+ {
++    MATE_FRAMEWORK_DEBUG_ANNOTATE_MEMORY(in, len, "crypto:false", __FILE__, __LINE__); // input for encryption is not crypto
++    MATE_FRAMEWORK_DEBUG_ANNOTATE_MEMORY(out, len, "crypto:true", __FILE__, __LINE__); // output for encryption is crypto
++
+     size_t bl = EVP_CIPHER_CTX_block_size(ctx);
+ 
+     if (len < bl)
+@@ -395,7 +401,7 @@ static int aesni_xts_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
+ 
+         /*
+          * Verify that the two keys are different.
+-         * 
++         *
+          * This addresses Rogaway's vulnerability.
+          * See comment in aes_xts_init_key() below.
+          */
+@@ -815,7 +821,7 @@ static int aes_t4_xts_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
+ 
+         /*
+          * Verify that the two keys are different.
+-         * 
++         *
+          * This addresses Rogaway's vulnerability.
+          * See comment in aes_xts_init_key() below.
+          */
+diff --git a/crypto/evp/evp_enc.c b/crypto/evp/evp_enc.c
+index 86ab4e2024..8dd62c7017 100644
+--- a/crypto/evp/evp_enc.c
++++ b/crypto/evp/evp_enc.c
+@@ -128,6 +128,7 @@ int EVP_CipherInit_ex(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher,
+         ctx->cipher = cipher;
+         if (ctx->cipher->ctx_size) {
+             ctx->cipher_data = OPENSSL_zalloc(ctx->cipher->ctx_size);
++            MATE_FRAMEWORK_DEBUG_ANNOTATE_MEMORY(ctx->cipher_data, ctx->cipher->ctx_size, "crypto:true", __FILE__, __LINE__); // data for cryptographic cipher
+             if (ctx->cipher_data == NULL) {
+                 ctx->cipher = NULL;
+                 EVPerr(EVP_F_EVP_CIPHERINIT_EX, ERR_R_MALLOC_FAILURE);
+diff --git a/crypto/modes/ctr128.c b/crypto/modes/ctr128.c
+index e778bd80a9..a8ba4e2f26 100644
+--- a/crypto/modes/ctr128.c
++++ b/crypto/modes/ctr128.c
+@@ -82,6 +82,9 @@ void CRYPTO_ctr128_encrypt(const unsigned char *in, unsigned char *out,
+                            unsigned char ecount_buf[16], unsigned int *num,
+                            block128_f block)
+ {
++    MATE_FRAMEWORK_DEBUG_ANNOTATE_MEMORY(in, len, "crypto:false", __FILE__, __LINE__); // input for encryption is not crypto
++    MATE_FRAMEWORK_DEBUG_ANNOTATE_MEMORY(out, len, "crypto:true", __FILE__, __LINE__); // output for encryption is crypto
++
+     unsigned int n;
+     size_t l = 0;
+ 
+@@ -159,6 +162,9 @@ void CRYPTO_ctr128_encrypt_ctr32(const unsigned char *in, unsigned char *out,
+                                  unsigned char ecount_buf[16],
+                                  unsigned int *num, ctr128_f func)
+ {
++    MATE_FRAMEWORK_DEBUG_ANNOTATE_MEMORY(in, len, "crypto:false", __FILE__, __LINE__); // input for encryption is not crypto
++    MATE_FRAMEWORK_DEBUG_ANNOTATE_MEMORY(out, len, "crypto:true", __FILE__, __LINE__); // output for encryption is crypto
++
+     unsigned int n, ctr32;
+ 
+     n = *num;
+diff --git a/crypto/modes/gcm128.c b/crypto/modes/gcm128.c
+index 63dcf05d05..55b0724d61 100644
+--- a/crypto/modes/gcm128.c
++++ b/crypto/modes/gcm128.c
+@@ -990,6 +990,9 @@ int CRYPTO_gcm128_encrypt(GCM128_CONTEXT *ctx,
+                           const unsigned char *in, unsigned char *out,
+                           size_t len)
+ {
++    MATE_FRAMEWORK_DEBUG_ANNOTATE_MEMORY(in, len, "crypto:false", __FILE__, __LINE__); // input for encryption is not crypto
++    MATE_FRAMEWORK_DEBUG_ANNOTATE_MEMORY(out, len, "crypto:true", __FILE__, __LINE__); // output for encryption is crypto
++
+     const union {
+         long one;
+         char little;
+@@ -1468,6 +1471,9 @@ int CRYPTO_gcm128_encrypt_ctr32(GCM128_CONTEXT *ctx,
+                                 const unsigned char *in, unsigned char *out,
+                                 size_t len, ctr128_f stream)
+ {
++    MATE_FRAMEWORK_DEBUG_ANNOTATE_MEMORY(in, len, "crypto:false", __FILE__, __LINE__); // input for encryption is not crypto
++    MATE_FRAMEWORK_DEBUG_ANNOTATE_MEMORY(out, len, "crypto:true", __FILE__, __LINE__); // output for encryption is crypto
++
+ #if defined(OPENSSL_SMALL_FOOTPRINT)
+     return CRYPTO_gcm128_encrypt(ctx, in, out, len);
+ #else
+diff --git a/include/MATE_FRAMEWORK.h b/include/MATE_FRAMEWORK.h
+index 6bff26f936..263ae96e89 100644
+--- a/include/MATE_FRAMEWORK.h
++++ b/include/MATE_FRAMEWORK.h
+@@ -5,7 +5,7 @@
+ extern "C" {
+ #endif
+ 
+-    void MATE_FRAMEWORK_DEBUG_ANNOTATE_MEMORY(const char *address, const char *annotation);
++    void MATE_FRAMEWORK_DEBUG_ANNOTATE_MEMORY(const char *address, unsigned int size, const char *annotation, const char* filename, unsigned int line);
+ 
+ #ifdef __cplusplus
+ }
+-- 
+2.25.1
+

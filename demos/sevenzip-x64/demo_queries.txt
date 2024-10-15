@@ -1,0 +1,16 @@
+MATCH (d:Disassembly)-[:DEFINES_BLOCK]->(b:BasicBlock) RETURN d, COUNT(b)
+MATCH (d:Disassembly)-[:DEFINES_BLOCK]->(b:BasicBlock)-[:HAS_INSTRUCTION]-(i:Instruction) RETURN d, COUNT(i)
+
+MATCH (id:Disassembly {module: 'IDADism'}), (gd:Disassembly {module: 'Grapp'}) WITH id, gd
+MATCH (id)-[:DEFINES_BLOCK]->(ib:BasicBlock)
+WHERE NOT EXISTS ((:BasicBlock {start_address: ib.start_address})<-[:DEFINES_BLOCK]-(gd))
+RETURN ib.start_address
+
+MATCH (:Disassembly {module: 'IDADism'})-[:DEFINES_BLOCK]->(b:BasicBlock)
+WHERE EXISTS ( (b)-[:HAS_INSTRUCTION]->(:Instruction)<-[:ANNOTATES]-()<-[*0..2]-(:Grapp) )
+RETURN b.start_address
+
+MATCH (:Disassembly {module: 'IDADism'})-[:DEFINES_BLOCK]->(b:BasicBlock)
+WHERE EXISTS ( (b)-[:HAS_INSTRUCTION]->(:Instruction)<-[:ANNOTATES]-()<-[*0..2]-(:Grapp) )
+AND   EXISTS ( (b)<-[:ANNOTATES]-()<-[]-(:Caballero) )
+RETURN b

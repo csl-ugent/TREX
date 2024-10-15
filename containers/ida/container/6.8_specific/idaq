@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+rootdir=$(cd $(dirname "$0") && pwd)
+QT_X11_NO_MITSHM=1 $rootdir/idaq.orig "$@"

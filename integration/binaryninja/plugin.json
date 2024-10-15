@@ -1,0 +1,10 @@
+{
+	"pluginmetadataversion" : 2,
+	"name": "MATE Attack Framework integration",
+	"type": ["core", "ui", "architecture", "binaryview", "helper"],
+	"api": ["python3"],
+	"description": "Integration plugin for MATE attack framework",
+	"platforms" : ["Linux"],
+	"author": "Thomas Faingnaert",
+	"minimumbinaryninjaversion": 1200
+}
