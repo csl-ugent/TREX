@@ -1,0 +1,63 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+
+- family-names: "Faingnaert"
+  given-names: "Thomas"
+  orcid: "https://orcid.org/0000-0002-6420-6476"
+
+- family-names: "Van Iseghem"
+  given-names: "Willem"
+
+- family-names: "Everaert"
+  given-names: "Gertjan"
+
+- family-names: "Verstraete"
+  given-names: "Waldo"
+  orcid: "https://orcid.org/0000-0003-2163-999X"
+
+- family-names: "De Sutter"
+  given-names: "Bjorn"
+  orcid: "https://orcid.org/0000-0003-0317-2089"
+
+title: "TREX"
+version: 1.0.0
+date-released: 2024-10-15
+url: "https://github.com/csl-ugent/TREX"
+
+preferred-citation:
+    type: conference-paper
+    authors:
+
+    - family-names: "Faingnaert"
+      given-names: "Thomas"
+      orcid: "https://orcid.org/0000-0002-6420-6476"
+
+    - family-names: "Zhang"
+      given-names: "Tab"
+
+    - family-names: "Van Iseghem"
+      given-names: "Willem"
+
+    - family-names: "Everaert"
+      given-names: "Gertjan"
+
+    - family-names: "Coppens"
+      given-names: "Bart"
+      orcid: "https://orcid.org/0000-0002-7628-9264"
+
+    - family-names: "Collberg"
+      given-names: "Christian"
+      orcid: "https://orcid.org/0000-0003-1301-7939"
+
+    - family-names: "De Sutter"
+      given-names: "Bjorn"
+      orcid: "https://orcid.org/0000-0003-0317-2089"
+
+    doi: "10.1145/3689934.3690817"
+    conference:
+        name: "Workshop on Research on offensive and defensive techniques in the context of Man At The End (MATE) attacks"
+        date-start: "2024-10-18"
+        date-end: "2024-10-18"
+    title: "Tools and Models for Software Reverse Engineering Research"
+    year: 2024
